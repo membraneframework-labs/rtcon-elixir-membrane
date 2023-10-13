@@ -1,0 +1,158 @@
+# Membrane intro
+
+```elixir
+Logger.configure(level: :info)
+
+Mix.install([
+  :membrane_core,
+  :membrane_hackney_plugin,
+  :membrane_mp3_mad_plugin,
+  :membrane_portaudio_plugin
+])
+```
+
+## Membrane intro
+
+If you have a Mac with ARM CPU, please run this command in your terminal:
+
+`brew install libmad portaudio pkg-config`
+
+and it will install the necessary dependencies in your OS.
+
+<!-- livebook:{"break_markdown":true} -->
+
+### Membrane
+
+* Targets mostly live streaming
+* API similar to GStreamer
+* Written in Elixir
+* Modular
+
+<!-- livebook:{"break_markdown":true} -->
+
+### Membrane - goals
+
+* To make work with multimedia a more pleasant experience than it is now.
+* To provide a welcoming ecosystem for learning multimedia development.
+* To power resilient, maintainable and scalable systems.
+
+<!-- livebook:{"break_markdown":true} -->
+
+### Pipelines
+
+```mermaid
+graph LR
+HTTP_client --> MP3_decoder --> Audio_player
+```
+
+<!-- livebook:{"break_markdown":true} -->
+
+### Task 1
+
+Create the pipeline spec in the `handle_init` callback below, to reflect the graph above. The spec can be created the following way:
+
+* An element can be spawned with the [child](https://hexdocs.pm/membrane_core/Membrane.ChildrenSpec.html#child/1) function:
+
+  * `child(SomeElement)` to just spawn `SomeElement`
+  * `child(%SomeElement{option: value})` to spawn `SomeElement` and pass an option to it
+
+* The elements can be linked together into a pipeline with the pipe `|>` operator, for example:
+
+  `child(SomeElement) |> child(AnotherElement)`
+
+The pipeline should contain the following elements:
+
+`%Membrane.Hackney.Source` with the following options: `location: mp3_url, hackney_opts: [follow_redirect: true]`, linked to `Membrane.MP3.MAD.Decoder`, linked to `Membrane.PortAudio.Sink`.
+
+```elixir
+defmodule MyPipeline do
+  use Membrane.Pipeline
+
+  @impl true
+  def handle_init(_ctx, mp3_url) do
+    # ...
+    spec =
+      {[spec: spec], %{}}
+  end
+end
+```
+
+```elixir
+mp3_url =
+  "https://raw.githubusercontent.com/membraneframework/membrane_demo/master/simple_pipeline/sample.mp3"
+
+{:ok, _supervisor, pipeline} = Membrane.Pipeline.start_link(MyPipeline, mp3_url)
+```
+
+```elixir
+Membrane.Pipeline.terminate(pipeline)
+```
+
+<!-- livebook:{"branch_parent_index":0} -->
+
+## Element
+
+### Task 2
+
+Fill the `handle_process` callback in the module below. It should:
+
+* Split buffer's payload into 3-byte chunks, so that each contains a single sample, with
+  [Bunch.Binary.chunk_every/2](https://hexdocs.pm/bunch/Bunch.Binary.html#chunk_every/2)
+* Use [Enum.map/2](https://hexdocs.pm/elixir/Enum.html#map/2) to transform samples. For each sample:
+  * Use pattern matching to decode the sample from the binary to an integer:
+
+    `<<value::integer-little-signed-size(sample_size_bytes)-unit(8)>> = sample`
+
+  * Multiply the sample value by `state.gain`.
+
+  * Use analogical syntax to encode the sample back to the binary form.
+* Use [Enum.join/2](https://hexdocs.pm/elixir/Enum.html#join/2) to concatenate samples into a single binary.
+
+```elixir
+defmodule VolumeKnob do
+  @moduledoc """
+  Membrane filter that changes the audio volume
+  by the gain passed via options.
+  """
+  use Membrane.Filter
+
+  alias Membrane.RawAudio
+
+  def_input_pad(:input, accepted_format: %RawAudio{sample_format: :s24le}, flow_control: :auto)
+  def_output_pad(:output, accepted_format: %RawAudio{sample_format: :s24le}, flow_control: :auto)
+
+  def_options(
+    gain: [
+      spec: float(),
+      description: """
+      The factor by which the volume will be changed.
+
+      A gain smaller than 1 reduces the volume and gain
+      greater than 1 increases it.
+      """
+    ]
+  )
+
+  @impl true
+  def handle_init(_ctx, options) do
+    {[], %{gain: options.gain}}
+  end
+
+  @impl true
+  def handle_process(:input, buffer, _ctx, state) do
+    sample_size_bytes = 3
+
+    payload =
+      buffer.payload
+
+    # implement volume changing here
+
+    buffer = %Membrane.Buffer{buffer | payload: payload}
+    {[buffer: {:output, buffer}], state}
+  end
+end
+```
+
+### Task 3
+
+Put the new element into our pipeline. Set the `gain` option to some reasonable value, for example `0.2`. Run the pipeline again and check if it plays quieter.
