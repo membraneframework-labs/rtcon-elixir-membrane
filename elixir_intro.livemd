@@ -6,6 +6,10 @@ Mix.install([:kino])
 
 ## Elixir intro
 
+### [github.com/membraneframework-labs/rtcon-elixir-membrane](https://github.com/membraneframework-labs/rtcon-elixir-membrane/)
+
+<!-- livebook:{"break_markdown":true} -->
+
 ### Agenda
 
 * Some background about Elixir, Erlang and the BEAM
