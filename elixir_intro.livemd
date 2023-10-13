@@ -116,7 +116,7 @@ end
 ```
 
 ```elixir
-user = User.new("John Smith", 19)
+user = User.new("Joe Armstrong", 19)
 IO.inspect(user)
 IO.puts(user.name)
 IO.puts(user.is_adult)
@@ -136,11 +136,11 @@ defmodule User2 do
   end
 end
 
-User2.new("John", 19)
+User2.new("Joe", 19)
 ```
 
 ```elixir
-{:ok, user} = User2.new("John Smith", 19)
+{:ok, user} = User2.new("Joe Armstrong", 19)
 IO.puts(user.name)
 ```
 
@@ -160,20 +160,20 @@ defmodule User3 do
   end
 end
 
-{:ok, user} = User3.new("John Smith", 19)
+{:ok, user} = User3.new("Joe Armstrong", 19)
 user
 ```
 
 ### Task 1
 
-Change the `is_adult` field in the `User3` struct to a `role` field, that can be either `:child` or `:adult`, so that the snippets below run successfully:
+Let's change the `is_adult` field in the `User3` struct to a `role` field, that can be either `:child` or `:adult`, so that the snippets below run successfully:
 
 ```elixir
-{:ok, %User3{name: "John", role: :adult}} = User3.new("John Smith", 19)
+{:ok, %User3{name: "Joe", role: :adult}} = User3.new("Joe Armstrong", 19)
 ```
 
 ```elixir
-{:ok, %User3{name: "John", role: :child}} = User3.new("John Smith", 13)
+{:ok, %User3{name: "Joe", role: :child}} = User3.new("Joe Armstrong", 13)
 ```
 
 <!-- livebook:{"branch_parent_index":0} -->
@@ -220,7 +220,7 @@ fruits
 
 ### Task 2
 
-Change the snippet above to ignore fruits that start with the letter `a`. It should return `["Banana", "Grape"]`. [The docs for the Enum module](https://hexdocs.pm/elixir/1.15/Enum.html) will help you 😊
+Let's change the snippet above to ignore fruits that start with the letter `a`. It should return `["Banana", "Grape"]`. [The docs for the Enum module](https://hexdocs.pm/elixir/1.15/Enum.html) will help you 😊
 
 <!-- livebook:{"break_markdown":true} -->
 
@@ -284,9 +284,9 @@ send(cart_pid, {:put, "beer"})
 GenServer.call(cart_pid, :get_all_products)
 ```
 
-### Task
+### Task 3
 
-Add a functionality to the `ShoppingCart` module to allow checking if a given product is in the cart, so that the snippet below works. [The docs for the Map module](https://hexdocs.pm/elixir/1.15/Map.html) will be helpful 😊
+Let's add a functionality to the `ShoppingCart` module to allow checking if a given product is in the cart, so that the snippet below works. [The docs for the Map module](https://hexdocs.pm/elixir/1.15/Map.html) will be helpful 😊
 
 ```elixir
 {:ok, cart_pid} = GenServer.start_link(ShoppingCart, [])

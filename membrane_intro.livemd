@@ -38,6 +38,14 @@ and it will install the necessary dependencies in your OS.
 
 <!-- livebook:{"break_markdown":true} -->
 
+### Membrane - links
+
+* website: [membrane.stream](https://membrane.stream)
+* github: [github.com/membraneframework](https://github.com/membraneframework)
+* docs: [hexdocs.pm](https://hexdocs.pm), for example [hexdocs.pm/membrane_core/0.12.9](https://hexdocs.pm/membrane_core/0.12.9)
+
+<!-- livebook:{"break_markdown":true} -->
+
 ### Pipelines
 
 ```mermaid
@@ -49,7 +57,7 @@ HTTP_client --> MP3_decoder --> Audio_player
 
 ### Task 1
 
-Create the pipeline spec in the `handle_init` callback below, to reflect the graph above. The spec can be created the following way:
+Let's create a pipeline spec in the `handle_init` callback below, to reflect the graph above. The spec can be created the following way:
 
 * An element can be spawned with the [child](https://hexdocs.pm/membrane_core/Membrane.ChildrenSpec.html#child/1) function:
 
@@ -70,9 +78,8 @@ defmodule MyPipeline do
 
   @impl true
   def handle_init(_ctx, mp3_url) do
-    # ...
-    spec =
-      {[spec: spec], %{}}
+    # spec = ...
+    {[spec: spec], %{}}
   end
 end
 ```
@@ -94,7 +101,7 @@ Membrane.Pipeline.terminate(pipeline)
 
 ### Task 2
 
-Fill the `handle_process` callback in the module below. It should:
+Let's fill the `handle_process` callback in the module below, so that it changed the audio volume according to the value of `gain`. It should:
 
 * Split buffer's payload into 3-byte chunks, so that each contains a single sample, with
   [Bunch.Binary.chunk_every/2](https://hexdocs.pm/bunch/Bunch.Binary.html#chunk_every/2)
@@ -145,6 +152,7 @@ defmodule VolumeKnob do
     payload =
       buffer.payload
 
+    # |> ...
     # implement volume changing here
 
     buffer = %Membrane.Buffer{buffer | payload: payload}
@@ -155,4 +163,10 @@ end
 
 ### Task 3
 
-Put the new element into our pipeline. Set the `gain` option to some reasonable value, for example `0.2`. Run the pipeline again and check if it plays quieter.
+Let's put the new element into our pipeline. It operates on the raw audio, so it should be linked right after the MP3 decoder. Set the `gain` option to some reasonable value, for example `0.2`. Run the pipeline again and check if it plays quieter.
+
+<!-- livebook:{"break_markdown":true} -->
+
+### Task 4
+
+Let's try a more complex example: a server that accepts RTMP and outputs HLS. Please follow the instructions [here](https://github.com/membraneframework/membrane_demo/tree/master/rtmp_to_hls).
