@@ -9,3 +9,5 @@ Prerequisites:
 [Part 1: Elixir](https://livebook.dev/run?url=https%3A%2F%2Fraw.githubusercontent.com%2Fmembraneframework-labs%2Frtcon-elixir-membrane%2Fmain%2Felixir_intro.livemd)
 
 [Part 2: Membrane](https://livebook.dev/run?url=https%3A%2F%2Fraw.githubusercontent.com%2Fmembraneframework-labs%2Frtcon-elixir-membrane%2Fmain%2Fmembrane_intro.livemd)
+
+[Part 2: Membrane - if audio playback doesn't work for you](https://livebook.dev/run?url=https%3A%2F%2Fraw.githubusercontent.com%2Fmembraneframework-labs%2Frtcon-elixir-membrane%2Fmain%2Fmembrane_intro_wav.livemd)
